@@ -74,18 +74,6 @@ class MainViewController: BaseViewController {
         
         navigationItem.titleView = imageView
         
-//        title = "Instagram"
-//        
-//        let appearance = UINavigationBarAppearance()
-//        
-//        appearance.titleTextAttributes = [
-//            .foregroundColor: UIColor.black,
-//            .font: UIFont.systemFont(ofSize: 20, weight: .bold)
-//        ]
-//        
-//        navigationController?.navigationBar.standardAppearance = appearance
-//        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .cameraIcon, style: .plain, target: self, action: nil)
         
         let paperButton = UIBarButtonItem(image: .messageIcon, style: .plain, target: self, action: nil)
@@ -100,12 +88,12 @@ class MainViewController: BaseViewController {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
             
             if sectionIndex == 0 {
-                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(100),
+                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(85),
                                                       heightDimension: .absolute(100))
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .estimated(100),
+                let groupSize = NSCollectionLayoutSize(widthDimension: .estimated(80),
                                                        heightDimension: .absolute(100))
                 
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
@@ -186,6 +174,22 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             }
         }
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let item = profileItems[indexPath.row]
+            
+            let selectedStory = StoryModel(
+                profileImage: item.imageUrl,
+                username: item.name,
+                createdAt: "4h",
+                postImage: item.postUrl
+            )
+            
+            viewModel.goToStories(with: selectedStory, from: profileItems)
+        } else {
+            return
+        }
+    }
 }
 
 extension MainViewController: MainViewDelegate {
@@ -201,7 +205,7 @@ extension MainViewController: MainViewDelegate {
     func didFetchProfiles(_ item: [ProfilesCell.Item]) {
         profileItems = item
         
-        profileItems.insert(.init(name: "Your Story", imageUrl: "https://discoverymood.com/wp-content/uploads/2020/04/Mental-Strong-Women-min-480x340.jpg", isLive: false), at: 0)
+        profileItems.insert(.init(name: "Your Story", imageUrl: "https://discoverymood.com/wp-content/uploads/2020/04/Mental-Strong-Women-min-480x340.jpg", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
         
         DispatchQueue.main.async {
             self.collectionView.reloadData()

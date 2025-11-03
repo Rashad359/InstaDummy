@@ -129,6 +129,7 @@ extension ProfilesCell {
     struct Item {
         let name: String
         let imageUrl: String
+        let postUrl: String
         let isLive: Bool
     }
     

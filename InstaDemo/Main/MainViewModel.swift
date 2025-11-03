@@ -14,6 +14,13 @@ protocol MainViewDelegate: AnyObject {
 }
 
 final class MainViewModel {
+    
+    private let coordinator: AppCoordinator
+    
+    init(coordinator: AppCoordinator) {
+        self.coordinator = coordinator
+    }
+    
     private let networkManager = DependencyContainer.shared.networkManager
     
     private weak var delegate: MainViewDelegate? = nil
@@ -87,6 +94,7 @@ final class MainViewModel {
             return .init(
                 name: item.username,
                 imageUrl: item.userPhoto,
+                postUrl: item.storyUrl,
                 isLive: item.isLive
             )
         }
@@ -136,5 +144,18 @@ final class MainViewModel {
         data.images.map { imageUrl in
             return .init(image: imageUrl)
         }
+    }
+    
+    func goToStories(with story: StoryModel, from profiles: [ProfilesCell.Item]) {
+        let allStories = profiles.map { item in
+            return StoryModel(
+                profileImage: item.imageUrl,
+                username: item.name,
+                createdAt: "4h",
+                postImage: item.postUrl
+            )
+        }
+        
+        coordinator.navigateToStories(stories: allStories, startFrom: story)
     }
 }

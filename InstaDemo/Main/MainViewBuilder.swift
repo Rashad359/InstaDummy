@@ -8,8 +8,15 @@
 import UIKit
 
 final class MainViewBuilder {
+    
+    private let coordinator: AppCoordinator
+    
+    init(coordinator: AppCoordinator) {
+        self.coordinator = coordinator
+    }
+    
     func build() -> UIViewController {
-        let viewModel = MainViewModel()
+        let viewModel = MainViewModel(coordinator: coordinator)
         let mainVC = MainViewController(viewModel: viewModel)
         
         return mainVC
