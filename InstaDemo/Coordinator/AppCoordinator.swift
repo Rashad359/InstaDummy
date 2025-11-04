@@ -19,7 +19,10 @@ protocol StoriesCoordinatorProtocol {
 
 class AppCoordinator: Coordinator, StoriesCoordinatorProtocol {
     
+    private weak var mainViewModel: MainViewModel?
+    
     private var stories: [StoryModel] = []
+    
     private var currentIndex: Int = 0
     
     private let navigationController: UINavigationController
@@ -30,6 +33,12 @@ class AppCoordinator: Coordinator, StoriesCoordinatorProtocol {
     
     func start() {
         let mainVC = MainViewBuilder(coordinator: self).build()
+        
+        if let mainVC = mainVC as? MainViewController {
+            mainViewModel = mainVC.disposableViewModel
+        }
+        
+        
         navigationController.setViewControllers([mainVC], animated: true)
     }
     
@@ -66,6 +75,7 @@ class AppCoordinator: Coordinator, StoriesCoordinatorProtocol {
     }
     
     func closeStories() {
+        mainViewModel?.markStoriesAsSeen(stories)
         navigationController.popToRootViewController(animated: true)
     }
     
@@ -74,6 +84,9 @@ class AppCoordinator: Coordinator, StoriesCoordinatorProtocol {
             closeStories()
             return
         }
+        
+        stories[index].isSeen = true
+        mainViewModel?.markStoriesAsSeen(stories)
         
         let story = stories[index]
         let storiesVC = StoriesBuilder(coordinator: self).build(with: story)

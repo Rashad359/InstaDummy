@@ -19,6 +19,8 @@ final class MainViewController: BaseViewController {
     
     private let viewModel: MainViewModel
     
+    var disposableViewModel: MainViewModel { viewModel }
+    
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -172,13 +174,19 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 0 {
-            let item = viewModel.profileItems[indexPath.row]
+            var item = viewModel.profileItems[indexPath.row]
+            
+            item.isSeen = true
+            viewModel.profileItems[indexPath.row] = item
+            
+            collectionView.reloadItems(at: [indexPath])
             
             let selectedStory = StoryModel(
                 profileImage: item.imageUrl,
                 username: item.name,
                 createdAt: "4h",
-                postImage: item.postUrl
+                postImage: item.postUrl,
+                isSeen: item.isSeen
             )
             
             viewModel.goToStories(with: selectedStory, from: viewModel.profileItems)
@@ -201,7 +209,9 @@ extension MainViewController: MainViewDelegate {
     func didFetchProfiles(_ item: [ProfilesCell.Item]) {
         viewModel.profileItems = item
         
-        viewModel.profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
+//        if !viewModel.profileItems.contains(where: { $0.name == "Your Story"} ) {
+//            viewModel.profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
+//        }
         
         DispatchQueue.main.async {
             self.collectionView.reloadData()

@@ -12,4 +12,5 @@ struct StoryModel: Equatable {
     let username: String
     let createdAt: String
     let postImage: String
+    var isSeen: Bool = false
 }

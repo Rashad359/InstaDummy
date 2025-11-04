@@ -33,12 +33,21 @@ final class MainViewModel {
         self.delegate = delegate
     }
     
+    func insertYourStory() {
+        profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
+    }
+    
     func fetchProfiles() {
         networkManager.fetchProfiles { result in
             switch result {
             case .success(let data):
                 
-                let cellData = self.mapDataToProfile(model: data)
+                var cellData = self.mapDataToProfile(model: data)
+                
+                if !cellData.contains(where: { $0.name == "Your Story"} ) {
+                    cellData.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
+                }
+                
                 self.delegate?.didFetchProfiles(cellData)
                 
             case .failure(let error):
@@ -155,10 +164,20 @@ final class MainViewModel {
                 profileImage: item.imageUrl,
                 username: item.name,
                 createdAt: "4h",
-                postImage: item.postUrl
+                postImage: item.postUrl,
+                isSeen: item.isSeen
             )
         }
         
         coordinator.navigateToStories(stories: allStories, startFrom: story)
+    }
+    
+    func markStoriesAsSeen(_ updatedStories: [StoryModel]) {
+        for updatedStory in updatedStories {
+            if let index = profileItems.firstIndex(where: { $0.name == updatedStory.username} ) {
+                profileItems[index].isSeen = updatedStory.isSeen
+            }
+        }
+        delegate?.didFetchProfiles(profileItems)
     }
 }

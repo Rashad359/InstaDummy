@@ -134,6 +134,7 @@ extension ProfilesCell {
         let imageUrl: String
         let postUrl: String
         let isLive: Bool
+        var isSeen: Bool = false
     }
     
     func configure(_ item: Item) {
@@ -146,6 +147,10 @@ extension ProfilesCell {
         } else {
             liveContainerView.isHidden = true
             containerView.gradientColors = [.storiesTop, .storiesMid, .storiesBot]
+        }
+        
+        if item.isSeen {
+            containerView.gradientColors = [.gray, .lightGray]
         }
     }
 }
