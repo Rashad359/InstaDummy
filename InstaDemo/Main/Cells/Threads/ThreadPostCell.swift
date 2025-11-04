@@ -228,8 +228,6 @@ final class ThreadPostCell: BaseCollectionViewCell {
             make.bottom.lessThanOrEqualToSuperview().inset(13)
         }
         
-//        descriptionLabel.isHidden = true
-        
         containerView.addSubview(mainStackView)
 
         [topStackView, midStackView].forEach(mainStackView.addArrangedSubview)
@@ -263,6 +261,16 @@ final class ThreadPostCell: BaseCollectionViewCell {
             make.bottom.equalToSuperview().offset(-18)
         }
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        descriptionLabel.isHidden = false
+        descriptionLabel.text = nil
+        
+        postImage.isHidden = false
+        postImage.image = nil
+    }
 }
 
 extension ThreadPostCell {
@@ -280,13 +288,29 @@ extension ThreadPostCell {
     
     func configure(_ item: Item) {
         profileName.text = item.userName
-        descriptionLabel.text = item.postDescription
         profileImage.kf.setImage(with: URL(string: item.profileImage))
-        postImage.kf.setImage(with: URL(string: item.postImage))
         postDate.text = self.showDate(dateString: item.postDate)
         likeCount.text = "\(item.likeCount)"
         commentCount.text = "\(item.commentCount)"
         repostCount.text = "\(item.repostCount)"
         sendCount.text = "\(item.sharedCount)"
+        
+        // Description handling
+        if item.postDescription.isEmpty {
+            descriptionLabel.isHidden = true
+            descriptionLabel.text = nil
+        } else {
+            descriptionLabel.isHidden = false
+            descriptionLabel.text = item.postDescription
+        }
+        
+        // Image handling
+        if item.postImage.isEmpty {
+            postImage.isHidden = true
+            postImage.image = nil
+        } else {
+            postImage.isHidden = false
+            postImage.kf.setImage(with: URL(string: item.postImage))
+        }
     }
 }

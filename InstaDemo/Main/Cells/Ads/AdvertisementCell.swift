@@ -101,37 +101,6 @@ final class AdvertisementCell: BaseCollectionViewCell {
         return collectionView
     }()
     
-//    private let shopView: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = .shopBar
-//        
-//        return view
-//    }()
-//    
-//    private let shopLabel: UILabel = {
-//        let label = UILabel()
-//        label.text = "Shop now"
-//        label.textColor = .white
-//        label.font = UIFont.systemFont(ofSize: 10, weight: .medium)
-//        
-//        return label
-//    }()
-//    
-//    private let shopChevronIcon: UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.image = .chevronRightIcon
-//        
-//        return imageView
-//    }()
-//    
-//    private let shopStackView: BaseHorizontalStackView = {
-//        let stackView = BaseHorizontalStackView()
-//        stackView.distribution = .equalSpacing
-//        stackView.alignment = .center
-//        
-//        return stackView
-//    }()
-    
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .pageViewBackground

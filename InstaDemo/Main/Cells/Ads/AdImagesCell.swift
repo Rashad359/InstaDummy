@@ -15,8 +15,9 @@
 import UIKit
 import SnapKit
 import Kingfisher
+import SafariServices
 
-final class AdImagesCell: UICollectionViewCell {
+final class AdImagesCell: UICollectionViewCell, SFSafariViewControllerDelegate {
     
     private var goToAdPage: (() -> ())? = nil
     
@@ -27,9 +28,10 @@ final class AdImagesCell: UICollectionViewCell {
         return image
     }()
     
-    private let shopView: UIView = {
+    private lazy var shopView: UIView = {
         let view = UIView()
         view.backgroundColor = .shopBar
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapShop)))
         
         return view
     }()
@@ -141,7 +143,6 @@ extension AdImagesCell {
     }
     
     func configure(_ item: Item) {
-//        postImage.image = item.image
         
         if let url = URL(string: item.image) {
             postImage.kf.setImage(with: url)
@@ -150,7 +151,24 @@ extension AdImagesCell {
         }
         
         self.goToAdPage = {
-            UIApplication.shared.open(URL(string: item.url) ?? URL(string: "https://www.google.com")!)
+            if #available(iOS 9.0, *) {
+                let urlString = item.url
+                if let url = URL(string: urlString) {
+                    let vc = SFSafariViewController(url: url, entersReaderIfAvailable: true)
+                    vc.delegate = self
+
+                   if var topController = UIApplication.shared.keyWindow?.rootViewController {
+                      while let presentedViewController = topController.presentedViewController {
+                          topController = presentedViewController
+                      }
+
+                      topController.present(vc, animated: true, completion: nil)
+                   }
+
+                }
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
 }

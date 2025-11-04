@@ -279,7 +279,6 @@ final class PostsCell: BaseCollectionViewCell {
             make.top.equalTo(imageCollectionView.snp.bottom).offset(21)
             make.centerX.equalTo(imageCollectionView.snp.centerX)
             make.height.equalTo(20)
-//            make.width.equalTo(80)
         }
         
         moreOptions.snp.makeConstraints { make in

@@ -70,6 +70,17 @@ final class ThreadsCell: UICollectionViewCell {
         return stackView
     }()
     
+    private let pageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        pageControl.numberOfPages = 3
+        pageControl.backgroundStyle = .automatic
+        pageControl.pageIndicatorTintColor = .gray
+        pageControl.currentPageIndicatorTintColor = .link
+        pageControl.isUserInteractionEnabled = false
+        
+        return pageControl
+    }()
+    
     private lazy var threadsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 375, height: 375)
@@ -102,7 +113,7 @@ final class ThreadsCell: UICollectionViewCell {
         
         backgroundColor = .clear
         
-        [topStackView, threadsCollectionView].forEach(contentView.addSubview)
+        [topStackView, threadsCollectionView, pageControl].forEach(contentView.addSubview)
         
         [profileStackView, moreOptions].forEach(topStackView.addArrangedSubview)
         
@@ -124,6 +135,13 @@ final class ThreadsCell: UICollectionViewCell {
             make.top.equalTo(topStackView.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(375)
+//            make.bottom.equalToSuperview().offset(-10)
+        }
+        
+        pageControl.snp.makeConstraints { make in
+            make.top.equalTo(threadsCollectionView.snp.bottom).offset(23)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(20)
             make.bottom.equalToSuperview().offset(-10)
         }
     }
@@ -152,6 +170,7 @@ extension ThreadsCell {
     struct Item {
         let username: String
         let joinCount: Int
+        var currentPage: Int = 0
         let posts: [ThreadPostCell.Item]
     }
     
@@ -159,7 +178,17 @@ extension ThreadsCell {
         locationLabel.text = "\(item.joinCount) others joined"
         
         self.items = item.posts
+        
+        let count = items.count + 1
+        pageControl.numberOfPages = count
+        pageControl.isHidden = !(count > 1)
+        
+        pageControl.currentPage = item.currentPage
         threadsCollectionView.reloadData()
+        DispatchQueue.main.async {
+            let indexPath = IndexPath(item: item.currentPage, section: 0)
+            self.threadsCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+        }
     }
 }
 
@@ -179,5 +208,17 @@ extension ThreadsCell: UICollectionViewDataSource, UICollectionViewDelegate {
             
             return cell
         }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
+        
+        pageControl.currentPage = currentPage
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        let currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
+        
+        pageControl.currentPage = currentPage
     }
 }

@@ -196,13 +196,6 @@ final class StoriesViewController: BaseViewController {
         })
     }
     
-    private func resetProgress() {
-        stopProgress()
-        elapsedTime = 0
-        startProgress()
-
-    }
-    
     private func stopProgress() {
         timer?.invalidate()
         timer = nil

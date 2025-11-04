@@ -51,7 +51,7 @@ class MainViewController: BaseViewController {
         setupNavigation()
         viewModel.subscribe(self)
         viewModel.fetchProfiles()
-        viewModel.fetchFeed() //for testing purposes
+        viewModel.fetchFeed()
     }
     
     override func setupUI() {
@@ -77,7 +77,7 @@ class MainViewController: BaseViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .cameraIcon, style: .plain, target: self, action: nil)
         
         let paperButton = UIBarButtonItem(image: .messageIcon, style: .plain, target: self, action: nil)
-        let tvButton = UIBarButtonItem(image: .tvIcon, style: .plain, target: self, action: nil)
+        let tvButton = UIBarButtonItem(image: .tvIcon.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: nil)
 
         navigationItem.rightBarButtonItems = [paperButton, tvButton]
         
@@ -205,7 +205,7 @@ extension MainViewController: MainViewDelegate {
     func didFetchProfiles(_ item: [ProfilesCell.Item]) {
         profileItems = item
         
-        profileItems.insert(.init(name: "Your Story", imageUrl: "https://discoverymood.com/wp-content/uploads/2020/04/Mental-Strong-Women-min-480x340.jpg", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
+        profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
         
         DispatchQueue.main.async {
             self.collectionView.reloadData()
