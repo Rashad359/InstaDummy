@@ -15,7 +15,7 @@ enum PostsHandler {
     case peopleSuggestions([PeopleAccountsCell.Item])
 }
 
-class MainViewController: BaseViewController {
+final class MainViewController: BaseViewController {
     
     private let viewModel: MainViewModel
     
@@ -27,10 +27,6 @@ class MainViewController: BaseViewController {
     @MainActor required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private var profileItems: [ProfilesCell.Item] = []
-    
-    private var items: [PostsHandler] = []
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
@@ -129,8 +125,8 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         return 2
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 { return profileItems.count }
-        else { return items.count }
+        if section == 0 { return viewModel.profileItems.count }
+        else { return viewModel.items.count }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -138,12 +134,12 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         if indexPath.section == 0 {
             
             let cell: ProfilesCell = collectionView.dequeueCell(with: indexPath)
-            cell.configure(profileItems[indexPath.row])
+            cell.configure(viewModel.profileItems[indexPath.row])
             
             return cell
             
         } else {
-            let myCell = items[indexPath.row]
+            let myCell = viewModel.items[indexPath.row]
             switch myCell {
             case .normalPost(let postItem):
                 
@@ -176,7 +172,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 0 {
-            let item = profileItems[indexPath.row]
+            let item = viewModel.profileItems[indexPath.row]
             
             let selectedStory = StoryModel(
                 profileImage: item.imageUrl,
@@ -185,7 +181,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
                 postImage: item.postUrl
             )
             
-            viewModel.goToStories(with: selectedStory, from: profileItems)
+            viewModel.goToStories(with: selectedStory, from: viewModel.profileItems)
         } else {
             return
         }
@@ -195,7 +191,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
 extension MainViewController: MainViewDelegate {
     
     func didFetchFeed(_ item: [PostsHandler]) {
-        self.items = item
+        self.viewModel.items = item
         
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -203,9 +199,9 @@ extension MainViewController: MainViewDelegate {
     }
     
     func didFetchProfiles(_ item: [ProfilesCell.Item]) {
-        profileItems = item
+        viewModel.profileItems = item
         
-        profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
+        viewModel.profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
         
         DispatchQueue.main.async {
             self.collectionView.reloadData()

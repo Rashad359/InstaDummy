@@ -31,6 +31,9 @@ final class ProfilesCell: UICollectionViewCell {
     private let profileName: UILabel = {
         let label = UILabel()
         label.text = "Test name"
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.7
+        label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         
         return label
     }()

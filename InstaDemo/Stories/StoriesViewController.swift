@@ -13,14 +13,6 @@ final class StoriesViewController: BaseViewController {
     
     private let viewModel: StoriesViewModel
     
-    private var timer: Timer?
-    
-    private var elapsedTime: TimeInterval = 0
-    
-    private var progress: Float {
-        Float(elapsedTime / 5)
-    }
-    
     init(viewModel: StoriesViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -73,7 +65,7 @@ final class StoriesViewController: BaseViewController {
         textField.layer.borderColor = UIColor.textFieldBorder.cgColor
         textField.layer.cornerRadius = 21
         
-        //Camera Icon
+        // Camera Icon
         let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 34))
         let imageView = UIImageView(frame: CGRect(x: 5, y: 0, width: 34, height: 34))
         imageView.image = .storyCamera
@@ -81,7 +73,7 @@ final class StoriesViewController: BaseViewController {
         textField.leftView = leftView
         textField.leftViewMode = .always
         
-        //Placeholder
+        // Placeholder
         let placeholderText = "Send Message"
         let placeholderAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.white
@@ -177,45 +169,26 @@ final class StoriesViewController: BaseViewController {
         super.viewDidLoad()
         
         setupResponse()
-        startProgress()
+        viewModel.subscribe(self)
+        viewModel.startProgress()
         
-    }
-    
-    private func startProgress() {
-        stopProgress()
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: { _ in
-            self.elapsedTime += 0.05
-            self.progressBar.progress = self.progress
-            
-            if self.elapsedTime >= 5 {
-                self.stopProgress()
-                self.viewModel.showNextStories()
-                
-            }
-        })
-    }
-    
-    private func stopProgress() {
-        timer?.invalidate()
-        timer = nil
     }
     
     @objc
     private func didTapRight() {
-        stopProgress()
+        viewModel.stopProgress()
         self.viewModel.showNextStories()
     }
     
     @objc
     private func didTapLeft() {
-        stopProgress()
+        viewModel.stopProgress()
         self.viewModel.showPreviousStories()
     }
     
     @objc
     private func didTapCancel() {
-        stopProgress()
+        viewModel.stopProgress()
         self.navigationController?.popToRootViewController(animated: true)
     }
     
@@ -297,5 +270,11 @@ final class StoriesViewController: BaseViewController {
             make.width.equalTo(view.snp.width).multipliedBy(0.5)
         }
         
+    }
+}
+
+extension StoriesViewController: StoriesViewDelegate {
+    func didShowProgress(_ time: Float) {
+        progressBar.progress = time
     }
 }

@@ -15,6 +15,10 @@ protocol MainViewDelegate: AnyObject {
 
 final class MainViewModel {
     
+    var profileItems: [ProfilesCell.Item] = []
+    
+    var items: [PostsHandler] = []
+    
     private let coordinator: AppCoordinator
     
     init(coordinator: AppCoordinator) {
@@ -49,7 +53,6 @@ final class MainViewModel {
         networkManager.fetchFeed { result in
             switch result {
             case .success(let data):
-                print("success")
                 var newItems: [PostsHandler] = []
                 
                 data.data.forEach { item in
