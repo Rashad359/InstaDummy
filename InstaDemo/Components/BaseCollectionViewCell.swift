@@ -46,19 +46,4 @@ class BaseCollectionViewCell: UICollectionViewCell {
         
         return attributedString
     }
-    
-    func showDate(dateString: String) -> String {
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        
-        if let date = isoFormatter.date(from: dateString) {
-            let displayFormatter = DateFormatter()
-            displayFormatter.dateFormat = "MMMM d"
-            
-            let formattedDate = displayFormatter.string(from: date)
-            return formattedDate
-        } else {
-            return "Invalid date format"
-        }
-    }
 }

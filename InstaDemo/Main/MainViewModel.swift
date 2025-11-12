@@ -113,7 +113,16 @@ final class MainViewModel {
     }
     
     func mapDataToNormalItem(_ data: NormalPost) -> PostsCell.Item {
-        return .init(username: data.username, userImage: data.userPhoto, location: data.location ?? "No location", postImage: self.mapDataToNormalImages(data), description: data.description ?? "hello world", likeCount: data.likeCount, likedBy: data.likedBy.first ?? "")
+        return .init(
+            username: data.username,
+            userImage: data.userPhoto,
+            location: data.location ?? "No location",
+            postImage: self.mapDataToNormalImages(data),
+            description: data.description ?? "hello world",
+            likeCount: data.likeCount,
+            likedBy: data.likedBy.first ?? "",
+            createdAt: data.createdAt
+        )
     }
     
     func mapDataToAdItem(_ data: AdPost) -> AdvertisementCell.Item {

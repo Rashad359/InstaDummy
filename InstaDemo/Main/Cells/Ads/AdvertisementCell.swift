@@ -209,22 +209,7 @@ final class AdvertisementCell: BaseCollectionViewCell {
         
         [likedPostProfileImage, likedPostLabel].forEach(likedPostStackView.addArrangedSubview(_:))
         
-//        shopView.addSubview(shopStackView)
-        
-//        [shopLabel, shopChevronIcon].forEach(shopStackView.addArrangedSubview)
-        
         containerView.addSubview(currentPageLabel)
-        
-//        shopView.snp.makeConstraints { make in
-//            make.bottom.equalTo(imageCollectionView.snp.bottom)
-//            make.horizontalEdges.equalToSuperview()
-//            make.height.equalTo(33)
-//        }
-//        
-//        shopStackView.snp.makeConstraints { make in
-//            make.horizontalEdges.equalToSuperview().inset(11)
-//            make.centerY.equalToSuperview()
-//        }
         
         topStackView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -303,7 +288,7 @@ extension AdvertisementCell {
         adImage.url = item.shoppingUrl
         profileImage.kf.setImage(with: URL(string: item.userImage))
         likedPostLabel.attributedText = self.changeText(text: "Liked by \(item.likedBy) and \(item.likeCount) others", alterRange1: "\(item.likedBy)", alterRange2: "\(item.likeCount) others")
-        postDateLabel.text = self.showDate(dateString: item.date)
+        postDateLabel.text = Date().showDate(dateString: item.date)
         
         imageCollectionView.reloadData()
     }

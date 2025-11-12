@@ -334,6 +334,7 @@ extension PostsCell {
         let description: String
         let likeCount: Int
         let likedBy: String
+        let createdAt: String
         var currentPage: Int = 0
     }
     
@@ -341,6 +342,7 @@ extension PostsCell {
         profileName.text = item.username.capitalized
         locationLabel.text = item.location
         postImage = item.postImage
+        postDateLabel.text = Date().showDate(dateString: item.createdAt)
         profileImage.kf.setImage(with: URL(string: item.userImage))
         if !item.description.isEmpty {
             postLabel.attributedText = self.changeText(text: "\(profileName.text ?? "No profile") \(item.description)", alterRange: "\(profileName.text ?? "No profile")")

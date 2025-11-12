@@ -289,7 +289,7 @@ extension ThreadPostCell {
     func configure(_ item: Item) {
         profileName.text = item.userName
         profileImage.kf.setImage(with: URL(string: item.profileImage))
-        postDate.text = self.showDate(dateString: item.postDate)
+        postDate.text = Date().showDate(shortDate: item.postDate)
         likeCount.text = "\(item.likeCount)"
         commentCount.text = "\(item.commentCount)"
         repostCount.text = "\(item.repostCount)"
