@@ -12,6 +12,6 @@ final class DependencyContainer {
     static let shared = DependencyContainer()
     
     lazy var networkManager: APISession = {
-        return NetworkAdapter()
+        return AlamofireAdapter()
     }()
 }
