@@ -11,7 +11,7 @@ final class NetworkAdapter: APISession {
     func fetchProfiles(completion: @escaping(Result<ProfileModel, Error>) -> Void) {
         let safeUrl = URL(string: "https://mocki.io/v1/d9936aaa-4308-4b91-8077-12d907f63ce2")!
         let url = URL(string: "http://172.20.10.179:3000/stories")!
-        var request = URLRequest(url: safeUrl)
+        var request = URLRequest(url: url)
         request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -38,7 +38,7 @@ final class NetworkAdapter: APISession {
     func fetchFeed(completion: @escaping(Result<FeedModel, Error>) -> Void) {
         let safeUrl = URL(string: "https://mocki.io/v1/d4b81786-a74a-48c7-ac19-c2ed0abfe394")!
         let url = URL(string: "http://172.20.10.179:3000/feed")!
-        var request = URLRequest(url: safeUrl)
+        var request = URLRequest(url: url)
         request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
