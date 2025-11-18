@@ -8,8 +8,11 @@
 import UIKit
 import SnapKit
 import Kingfisher
+import Combine
 
 final class StoriesViewController: BaseViewController {
+    
+    private var observer: [AnyCancellable] = []
     
     private let viewModel: StoriesViewModel
     
@@ -169,9 +172,15 @@ final class StoriesViewController: BaseViewController {
         super.viewDidLoad()
         
         setupResponse()
-        viewModel.subscribe(self)
         viewModel.startProgress()
+        bindViewModel()
         
+    }
+    
+    private func bindViewModel() {
+        viewModel.progressPublisher.sink { time in
+            self.progressBar.progress = time
+        }.store(in: &observer)
     }
     
     @objc
@@ -270,11 +279,5 @@ final class StoriesViewController: BaseViewController {
             make.width.equalTo(view.snp.width).multipliedBy(0.5)
         }
         
-    }
-}
-
-extension StoriesViewController: StoriesViewDelegate {
-    func didShowProgress(_ time: Float) {
-        progressBar.progress = time
     }
 }

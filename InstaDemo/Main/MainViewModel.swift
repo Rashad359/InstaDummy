@@ -6,14 +6,27 @@
 //
 
 import UIKit
-
-protocol MainViewDelegate: AnyObject {
-    func didFetchProfiles(_ item: [ProfilesCell.Item])
-    func didFetchFeed(_ item: [PostsHandler])
-    func error(_ error: Error)
-}
+import Combine
 
 final class MainViewModel {
+    
+    private let profilesSubject = PassthroughSubject<[ProfilesCell.Item], Never>()
+    
+    private let feedSubject = PassthroughSubject<[PostsHandler], Never>()
+    
+    private let errorSubject = PassthroughSubject<Error, Never>()
+    
+    var profilesPublisher: AnyPublisher<[ProfilesCell.Item], Never> {
+        profilesSubject.eraseToAnyPublisher()
+    }
+    
+    var feedPublisher: AnyPublisher<[PostsHandler], Never> {
+        feedSubject.eraseToAnyPublisher()
+    }
+    
+    var errorPublisher: AnyPublisher<Error, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
     
     var profileItems: [ProfilesCell.Item] = []
     
@@ -26,12 +39,6 @@ final class MainViewModel {
     }
     
     private let networkManager = DependencyContainer.shared.networkManager
-    
-    private weak var delegate: MainViewDelegate? = nil
-    
-    func subscribe(_ delegate: MainViewDelegate) {
-        self.delegate = delegate
-    }
     
     func insertYourStory() {
         profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
@@ -48,11 +55,11 @@ final class MainViewModel {
                     cellData.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
                 }
                 
-                self.delegate?.didFetchProfiles(cellData)
+                self.profilesSubject.send(cellData)
                 
             case .failure(let error):
                 
-                self.delegate?.error(error)
+                self.errorSubject.send(error)
                 
             }
         }
@@ -91,12 +98,12 @@ final class MainViewModel {
                         newItems.append(.threads(threadsData))
                     }
                     
-                    self.delegate?.didFetchFeed(newItems)
+                    self.feedSubject.send(newItems)
                 }
                 
                 
             case .failure(let error):
-                print("SOMETHING WENT WRONG: ", error.localizedDescription)
+                self.errorSubject.send(error)
             }
         }
     }
@@ -187,6 +194,6 @@ final class MainViewModel {
                 profileItems[index].isSeen = updatedStory.isSeen
             }
         }
-        delegate?.didFetchProfiles(profileItems)
+        profilesSubject.send(profileItems)
     }
 }

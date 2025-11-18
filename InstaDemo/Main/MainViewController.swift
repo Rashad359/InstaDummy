@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 enum PostsHandler {
     case normalPost(PostsCell.Item)
@@ -20,6 +21,8 @@ final class MainViewController: BaseViewController {
     private let viewModel: MainViewModel
     
     var disposableViewModel: MainViewModel { viewModel }
+    
+    private var observer: [AnyCancellable] = []
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -47,7 +50,7 @@ final class MainViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigation()
-        viewModel.subscribe(self)
+        bindViewModel()
         viewModel.fetchProfiles()
         viewModel.fetchFeed()
     }
@@ -61,6 +64,25 @@ final class MainViewController: BaseViewController {
             make.edges.equalToSuperview()
         }
         
+        
+        
+    }
+    
+    private func bindViewModel() {
+        
+        viewModel.profilesPublisher.sink { items in
+            self.viewModel.profileItems = items
+            self.collectionView.reloadData()
+        }.store(in: &observer)
+        
+        viewModel.feedPublisher.sink { items in
+            self.viewModel.items = items
+            self.collectionView.reloadData()
+        }.store(in: &observer)
+        
+        viewModel.errorPublisher.sink { error in
+            print("Error", error.localizedDescription)
+        }.store(in: &observer)
     }
     
     private func setupNavigation() {
@@ -194,34 +216,4 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             return
         }
     }
-}
-
-extension MainViewController: MainViewDelegate {
-    
-    func didFetchFeed(_ item: [PostsHandler]) {
-        self.viewModel.items = item
-        
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
-    }
-    
-    func didFetchProfiles(_ item: [ProfilesCell.Item]) {
-        viewModel.profileItems = item
-        
-//        if !viewModel.profileItems.contains(where: { $0.name == "Your Story"} ) {
-//            viewModel.profileItems.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
-//        }
-        
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
-    }
-    
-    func error(_ error: any Error) {
-        
-        print(error.localizedDescription)
-    }
-    
-    
 }

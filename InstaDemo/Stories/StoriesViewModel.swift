@@ -6,12 +6,15 @@
 //
 
 import UIKit
-
-protocol StoriesViewDelegate: AnyObject {
-    func didShowProgress(_ time: Float)
-}
+import Combine
 
 final class StoriesViewModel {
+    
+    private let progressSubject = PassthroughSubject<Float, Never>()
+    
+    var progressPublisher: AnyPublisher<Float, Never> {
+        progressSubject.eraseToAnyPublisher()
+    }
     
     private var timer: Timer?
     
@@ -31,12 +34,6 @@ final class StoriesViewModel {
         self.coordinator = coordinator
     }
     
-    private weak var delegate: StoriesViewDelegate? = nil
-    
-    func subscribe(_ delegate: StoriesViewDelegate) {
-        self.delegate = delegate
-    }
-    
     func showNextStories() {
         coordinator.showNextStory(after: story)
     }
@@ -54,7 +51,7 @@ final class StoriesViewModel {
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: { _ in
             self.elapsedTime += 0.05
-            self.delegate?.didShowProgress(self.progress)
+            self.progressSubject.send(self.progress)
             
             if self.elapsedTime >= 5 {
                 self.stopProgress()
