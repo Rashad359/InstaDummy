@@ -12,7 +12,7 @@ import Combine
 
 final class StoriesViewController: BaseViewController {
     
-    private var observer: [AnyCancellable] = []
+    private var cancellable = Set<AnyCancellable>()
     
     private let viewModel: StoriesViewModel
     
@@ -178,9 +178,9 @@ final class StoriesViewController: BaseViewController {
     }
     
     private func bindViewModel() {
-        viewModel.progressPublisher.sink { time in
+        viewModel.$progress.sink { time in
             self.progressBar.progress = time
-        }.store(in: &observer)
+        }.store(in: &cancellable)
     }
     
     @objc

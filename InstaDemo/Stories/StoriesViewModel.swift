@@ -10,19 +10,11 @@ import Combine
 
 final class StoriesViewModel {
     
-    private let progressSubject = PassthroughSubject<Float, Never>()
-    
-    var progressPublisher: AnyPublisher<Float, Never> {
-        progressSubject.eraseToAnyPublisher()
-    }
-    
     private var timer: Timer?
     
     private var elapsedTime: TimeInterval = 0
     
-    private var progress: Float {
-        Float(elapsedTime / 5)
-    }
+    @Published private(set) var progress: Float = 0
     
     private var story: StoryModel
     var storyModel: StoryModel { story }
@@ -51,7 +43,7 @@ final class StoriesViewModel {
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: { _ in
             self.elapsedTime += 0.05
-            self.progressSubject.send(self.progress)
+            self.progress = Float(self.elapsedTime / 5)
             
             if self.elapsedTime >= 5 {
                 self.stopProgress()
