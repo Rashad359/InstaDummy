@@ -10,27 +10,11 @@ import Combine
 
 final class MainViewModel {
     
-    private let profilesSubject = PassthroughSubject<[ProfilesCell.Item], Never>()
+    @Published private(set) var profileItems: [ProfilesCell.Item] = []
     
-    private let feedSubject = PassthroughSubject<[PostsHandler], Never>()
+    @Published private(set) var items: [PostsHandler] = []
     
-    private let errorSubject = PassthroughSubject<Error, Never>()
-    
-    var profilesPublisher: AnyPublisher<[ProfilesCell.Item], Never> {
-        profilesSubject.eraseToAnyPublisher()
-    }
-    
-    var feedPublisher: AnyPublisher<[PostsHandler], Never> {
-        feedSubject.eraseToAnyPublisher()
-    }
-    
-    var errorPublisher: AnyPublisher<Error, Never> {
-        errorSubject.eraseToAnyPublisher()
-    }
-    
-    var profileItems: [ProfilesCell.Item] = []
-    
-    var items: [PostsHandler] = []
+    @Published private(set) var error: Error? = nil
     
     private let coordinator: AppCoordinator
     
@@ -55,11 +39,11 @@ final class MainViewModel {
                     cellData.insert(.init(name: "Your Story", imageUrl: "https://i.pravatar.cc/100?img=12", postUrl: "https://fastly.picsum.photos/id/619/720/1280.jpg?hmac=v9BPzSXNfQWdOA_dZWLJaMomh8Vh6lwa8KRADnuF32o", isLive: false), at: 0)
                 }
                 
-                self.profilesSubject.send(cellData)
+                self.profileItems = cellData
                 
             case .failure(let error):
                 
-                self.errorSubject.send(error)
+                self.error = error
                 
             }
         }
@@ -98,12 +82,14 @@ final class MainViewModel {
                         newItems.append(.threads(threadsData))
                     }
                     
-                    self.feedSubject.send(newItems)
+                    self.items = newItems
+                    
                 }
                 
                 
             case .failure(let error):
-                self.errorSubject.send(error)
+                
+                self.error = error
             }
         }
     }
@@ -194,6 +180,11 @@ final class MainViewModel {
                 profileItems[index].isSeen = updatedStory.isSeen
             }
         }
-        profilesSubject.send(profileItems)
+        
+        self.profileItems = profileItems
+    }
+    
+    func markStorySeen(_ item: ProfilesCell.Item, at index: Int) {
+        profileItems[index] = item
     }
 }

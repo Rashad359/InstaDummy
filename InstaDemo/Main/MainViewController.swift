@@ -22,7 +22,7 @@ final class MainViewController: BaseViewController {
     
     var disposableViewModel: MainViewModel { viewModel }
     
-    private var observer: [AnyCancellable] = []
+    private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -50,7 +50,7 @@ final class MainViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigation()
-        bindViewModel()
+        setupBindings()
         viewModel.fetchProfiles()
         viewModel.fetchFeed()
     }
@@ -64,25 +64,20 @@ final class MainViewController: BaseViewController {
             make.edges.equalToSuperview()
         }
         
-        
-        
     }
     
-    private func bindViewModel() {
-        
-        viewModel.profilesPublisher.sink { items in
-            self.viewModel.profileItems = items
+    private func setupBindings() {
+        viewModel.$items.sink { item in
             self.collectionView.reloadData()
-        }.store(in: &observer)
+        }.store(in: &cancellables)
         
-        viewModel.feedPublisher.sink { items in
-            self.viewModel.items = items
+        viewModel.$profileItems.sink { profileItems in
             self.collectionView.reloadData()
-        }.store(in: &observer)
+        }.store(in: &cancellables)
         
-        viewModel.errorPublisher.sink { error in
-            print("Error", error.localizedDescription)
-        }.store(in: &observer)
+        viewModel.$error.sink { error in
+            print(error?.localizedDescription ?? "")
+        }.store(in: &cancellables)
     }
     
     private func setupNavigation() {
@@ -199,7 +194,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             var item = viewModel.profileItems[indexPath.row]
             
             item.isSeen = true
-            viewModel.profileItems[indexPath.row] = item
+            viewModel.markStorySeen(item, at: indexPath.row)
             
             collectionView.reloadItems(at: [indexPath])
             
